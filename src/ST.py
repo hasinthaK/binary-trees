@@ -1,4 +1,6 @@
 import sys
+from datetime import datetime
+from file_utils import read_data_files
 
 sys.setrecursionlimit(30000)
 
@@ -181,3 +183,77 @@ class SplayTree:
     # delete the node from the tree
     def delete(self, data):
         self.delete_node_helper(self.root, data)
+
+def st_insert(st: SplayTree):
+    insert_values = read_data_files('insert')
+    
+    # execution times for insertion of each file
+    exec_times = []
+    
+    # insert values from each file into the tree
+    for values in insert_values.values():
+        start = datetime.now()
+        
+        # insert each value from file to the tree
+        for value in values:
+            st.insert(value)
+            
+        end = datetime.now()
+        # add execution time for each file
+        exec_times.append(end - start)
+        
+    return exec_times
+        
+def st_search(st: SplayTree):
+    # initialize the empty tree first
+    st_insert(st)
+    
+    search_values = read_data_files('search')
+    
+    # execution times for search of each file
+    exec_times = []
+    
+    # search values of each file from the tree
+    for values in search_values.values():
+        start = datetime.now()
+        
+        # search each value of file from the tree
+        for value in values:
+            st.search(value)
+            
+        end = datetime.now()
+        # add execution time for each file
+        exec_times.append(end - start)
+        
+    return exec_times
+
+def st_delete(st: SplayTree):
+    # initialize the empty tree first
+    st_insert(st)
+    
+    delete_values = read_data_files('delete')
+    
+    # execution times for deletion of each file
+    exec_times = []
+    
+    # delete values of each file from the tree
+    for values in delete_values.values():
+        start = datetime.now()
+        
+        # delete each value of file from the tree
+        for value in values:
+            st.delete(value)
+            
+        end = datetime.now()
+        # add execution time for each file
+        exec_times.append(end - start)
+        
+    return exec_times
+    
+if __name__ == '__main__':
+    # initialize the tree
+    st = SplayTree()
+    
+    print(st_insert(st))
+    # print(st_search(st))
+    # print(st_delete(st))

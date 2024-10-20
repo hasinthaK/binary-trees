@@ -1,4 +1,6 @@
 import sys
+from datetime import datetime
+from file_utils import read_data_files
 
 sys.setrecursionlimit(30000)
 
@@ -143,3 +145,78 @@ class BinarySearchTree:
                 self.insert(node)
 
         return True
+
+
+def bst_insert(bst: BinarySearchTree):
+    insert_values = read_data_files('insert')
+    
+    # execution times for insertion of each file
+    exec_times = []
+    
+    # insert values from each file into the tree
+    for values in insert_values.values():
+        start = datetime.now()
+        
+        # insert each value from file to the tree
+        for value in values:
+            bst.insert(value)
+            
+        end = datetime.now()
+        # add execution time for each file
+        exec_times.append(end - start)
+        
+    return exec_times
+        
+def bst_search(bst: BinarySearchTree):
+    # initialize the empty tree first
+    bst_insert(bst)
+    
+    search_values = read_data_files('search')
+    
+    # execution times for search of each file
+    exec_times = []
+    
+    # search values of each file from the tree
+    for values in search_values.values():
+        start = datetime.now()
+        
+        # search each value of file from the tree
+        for value in values:
+            bst.search(value)
+            
+        end = datetime.now()
+        # add execution time for each file
+        exec_times.append(end - start)
+        
+    return exec_times
+
+def bst_delete(bst: BinarySearchTree):
+    # initialize the empty tree first
+    bst_insert(bst)
+    
+    delete_values = read_data_files('delete')
+    
+    # execution times for deletion of each file
+    exec_times = []
+    
+    # delete values of each file from the tree
+    for values in delete_values.values():
+        start = datetime.now()
+        
+        # delete each value of file from the tree
+        for value in values:
+            bst.delete(value)
+            
+        end = datetime.now()
+        # add execution time for each file
+        exec_times.append(end - start)
+        
+    return exec_times
+    
+if __name__ == '__main__':
+    # initialize the tree
+    bst = BinarySearchTree()
+    
+    print(bst_insert(bst))
+    # print(bst_search(bst))
+    # print(bst_delete(bst))
