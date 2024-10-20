@@ -1,6 +1,12 @@
 import os
+import csv
 
-__all__ = ['read_data_files']
+__all__ = [
+    'read_data_files',
+    'write_to_file',
+    'compute_avg',
+    'construct_line_to_write'
+    ]
 
 def _read_values_from_file(file_path: str):
     '''
@@ -22,7 +28,7 @@ def _read_values_from_file(file_path: str):
     
     return values
 
-def read_data_files(file_type: str = 'insert' or 'search' or 'delete'):
+def read_data_files(op_type: str = 'insert' or 'search' or 'delete'):
     '''
     Read all the files for specified type & return as a dictionary in the 
     following format.
@@ -42,7 +48,7 @@ def read_data_files(file_type: str = 'insert' or 'search' or 'delete'):
     # read all data files in order
     for set_count in range(1, insert_files_set_count + 1):
         for data_count in range(1, insert_files_data_count + 1):
-            file_name = f'{file_type}_set{set_count}_data_{data_count}.txt'
+            file_name = f'{op_type}_set{set_count}_data_{data_count}.txt'
             # Construct the full file path
             file_path = os.path.join(current_dir, file_name)
             
@@ -51,3 +57,76 @@ def read_data_files(file_type: str = 'insert' or 'search' or 'delete'):
     
     return file_values
 
+def compute_avg(tree_type: str = 'bst' or 'rbt' or 'st', op_type: str = 'insert' or 'search' or 'delete'):
+    '''
+    Read the file denoted by the args & compute average for each line item, then append at the end.
+    '''
+    # Get the directory of the current script
+    current_dir = os.path.dirname(os.path.abspath(__file__))
+    file_name = f'{op_type}_{tree_type}_exec_times.csv'
+    file_path = os.path.join(current_dir, file_name)
+    
+    # dict to group exec times
+    exec_time_data = {}
+    # dict to group height exec times
+    height_exec_time_data = {}
+    
+    # Read the CSV file and compute averages
+    with open(file_path, 'r', newline='\n') as file:
+        reader = csv.reader(file)
+        for row in reader:
+            index, set_no, data_no, exec_time, height_exec_time, tree_type = row
+            key = (set_no, data_no, tree_type)
+            
+            # create exec time data dict grouped by key
+            if key not in exec_time_data:
+                exec_time_data[key] = []
+            exec_time_data[key].append(float(exec_time))
+            
+            # create height exec time data dict grouped by key
+            if key not in height_exec_time_data:
+                height_exec_time_data[key] = []
+            height_exec_time_data[key].append(float(height_exec_time))
+    
+    # Compute averages
+    averages = {key: sum(values) / len(values) for key, values in exec_time_data.items()}
+    
+    # compute height exec time averages
+    height_averages = {key: sum(values) / len(values) for key, values in height_exec_time_data.items()}
+    
+    # Write the updated data back to the CSV file
+    temp_file_path = os.path.join(current_dir, f'temp_{file_name}')
+    with open(file_path, 'r', newline='\n') as input_file, open(temp_file_path, 'w', newline='\n') as output_file:
+        reader = csv.reader(input_file)
+        writer = csv.writer(output_file)
+        for row in reader:
+            index, set_no, data_no, exec_time, height_exec_time, tree_type = row
+            key = (set_no, data_no, tree_type)
+            avg_exec_time = averages[key]
+            avg_height_exec_time = height_averages[key]
+            writer.writerow(row + [f'{avg_exec_time:.6f}'] + [f'{avg_height_exec_time:.6f}'])
+    
+    print(f'Averaged for {file_name}')
+    # Replace the original file with the updated one
+    os.replace(temp_file_path, file_path)
+
+def construct_line_to_write(index: int, set_no: int, data_no: int, exec_time: float, height_exec_time: float, tree_type: str = 'bst' or 'rbt' or 'st'):
+    '''
+    Create a line item to be written into the CSV file. This function 
+    denotes the strcuture of the csv files written.
+    '''
+    return f'{index},{set_no},{data_no},{exec_time},{height_exec_time},{tree_type}'
+
+def write_to_file(line: str, tree_type: str = 'bst' or 'rbt' or 'st', op_type: str = 'insert' or 'search' or 'delete'):
+    '''
+    Write the provided line to file specified.
+    '''
+    # Get the directory of the current script
+    current_dir = os.path.dirname(os.path.abspath(__file__))
+    file_name = f'{op_type}_{tree_type}_exec_times.csv'
+    file_path = os.path.join(current_dir, file_name)
+    
+    print(f'Writing to file: {file_name}')
+    
+    with open(file_path, 'a', newline='\n') as file:
+        file.write(line + '\n')

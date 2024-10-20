@@ -1,6 +1,6 @@
 import sys
 from datetime import datetime
-from file_utils import read_data_files
+from file_utils import read_data_files, construct_line_to_write, write_to_file, compute_avg
 
 sys.setrecursionlimit(30000)
 
@@ -183,12 +183,32 @@ class SplayTree:
     # delete the node from the tree
     def delete(self, data):
         self.delete_node_helper(self.root, data)
+        
+    def tree_height(self):
+        return self._height_helper(self.root)
+
+    def _height_helper(self, node):
+        start = datetime.now()
+        if node is None:
+            end = datetime.now()
+            return (0, end - start)
+        
+        left_height = self._height_helper(node.left)[0]
+        right_height = self._height_helper(node.right)[0]
+        
+        height = max(left_height, right_height) + 1
+        end = datetime.now()
+        return (height, end - start)
 
 def st_insert(st: SplayTree):
     insert_values = read_data_files('insert')
     
     # execution times for insertion of each file
     exec_times = []
+    
+    # execution times for tree_height
+    # this should not be returned for coder runner activity
+    tree_height_exec_times = []
     
     # insert values from each file into the tree
     for values in insert_values.values():
@@ -202,7 +222,12 @@ def st_insert(st: SplayTree):
         # add execution time for each file
         exec_times.append(end - start)
         
-    return exec_times
+        # add tree_height exec time for each file
+        tree_height_exec_times.append(st.tree_height()[1])
+        
+    # return only exec_times for code runner
+    # return exec_times
+    return (exec_times, tree_height_exec_times)
         
 def st_search(st: SplayTree):
     # initialize the empty tree first
@@ -212,6 +237,10 @@ def st_search(st: SplayTree):
     
     # execution times for search of each file
     exec_times = []
+    
+    # execution times for tree_height
+    # this should not be returned for coder runner activity
+    tree_height_exec_times = []
     
     # search values of each file from the tree
     for values in search_values.values():
@@ -225,7 +254,12 @@ def st_search(st: SplayTree):
         # add execution time for each file
         exec_times.append(end - start)
         
-    return exec_times
+        # add tree_height exec time for each file
+        tree_height_exec_times.append(st.tree_height()[1])
+        
+    # return only exec_times for code runner
+    # return exec_times
+    return (exec_times, tree_height_exec_times)
 
 def st_delete(st: SplayTree):
     # initialize the empty tree first
@@ -235,6 +269,10 @@ def st_delete(st: SplayTree):
     
     # execution times for deletion of each file
     exec_times = []
+    
+    # execution times for tree_height
+    # this should not be returned for coder runner activity
+    tree_height_exec_times = []
     
     # delete values of each file from the tree
     for values in delete_values.values():
@@ -248,12 +286,108 @@ def st_delete(st: SplayTree):
         # add execution time for each file
         exec_times.append(end - start)
         
-    return exec_times
+        # add tree_height exec time for each file
+        tree_height_exec_times.append(st.tree_height()[1])
+        
+    # return only exec_times for code runner
+    # return exec_times
+    return (exec_times, tree_height_exec_times)
     
+def avg_exec_time_insert(iterations: int = 3):
+    '''
+    Execute the tree operation for the specified no of iterations
+    & write the execution times in csv. Finally calculate average
+    execution time & write back.
+    '''
+    print('Averaging ST insert..')
+    lines_to_write = []
+    for i in range(iterations):
+        # re-initialize tree each time
+        st = SplayTree()
+        ([one_1, one_2, one_3, two_1, two_2, two_3], [h_one_1, h_one_2, h_one_3, h_two_1, h_two_2, h_two_3]) = st_insert(st)
+        
+        # write each execution time one by one
+        lines_to_write.append(construct_line_to_write(i, 1, 1, one_1.total_seconds(), h_one_1.total_seconds(), 'st'))
+        lines_to_write.append(construct_line_to_write(i, 1, 1, one_1.total_seconds(), h_one_1.total_seconds(), 'st'))
+        lines_to_write.append(construct_line_to_write(i, 1, 2, one_2.total_seconds(), h_one_2.total_seconds(), 'st'))
+        lines_to_write.append(construct_line_to_write(i, 1, 3, one_3.total_seconds(), h_one_3.total_seconds(), 'st'))
+        lines_to_write.append(construct_line_to_write(i, 2, 1, two_1.total_seconds(), h_two_1.total_seconds(), 'st'))
+        lines_to_write.append(construct_line_to_write(i, 2, 2, two_2.total_seconds(), h_two_2.total_seconds(), 'st'))
+        lines_to_write.append(construct_line_to_write(i, 2, 1, two_3.total_seconds(), h_two_3.total_seconds(), 'st'))
+        
+    for line in lines_to_write:
+        write_to_file(line, 'st', 'insert')
+    
+    compute_avg('st', 'insert')
+    
+def avg_exec_time_search(iterations: int = 3):
+    '''
+    Execute the tree operation for the specified no of iterations
+    & write the execution times in csv. Finally calculate average
+    execution time & write back.
+    '''
+    print('Averaging ST search..')
+    lines_to_write = []
+    for i in range(iterations):
+        # re-initialize tree each time
+        st = SplayTree()
+        # ignore insertion for this
+        st_insert(st)
+        ([one_1, one_2, one_3, two_1, two_2, two_3], [h_one_1, h_one_2, h_one_3, h_two_1, h_two_2, h_two_3]) = st_search(st)
+        
+        # write each execution time one by one
+        lines_to_write.append(construct_line_to_write(i, 1, 1, one_1.total_seconds(), h_one_1.total_seconds(), 'st'))
+        lines_to_write.append(construct_line_to_write(i, 1, 1, one_1.total_seconds(), h_one_1.total_seconds(), 'st'))
+        lines_to_write.append(construct_line_to_write(i, 1, 2, one_2.total_seconds(), h_one_2.total_seconds(), 'st'))
+        lines_to_write.append(construct_line_to_write(i, 1, 3, one_3.total_seconds(), h_one_3.total_seconds(), 'st'))
+        lines_to_write.append(construct_line_to_write(i, 2, 1, two_1.total_seconds(), h_two_1.total_seconds(), 'st'))
+        lines_to_write.append(construct_line_to_write(i, 2, 2, two_2.total_seconds(), h_two_2.total_seconds(), 'st'))
+        lines_to_write.append(construct_line_to_write(i, 2, 1, two_3.total_seconds(), h_two_3.total_seconds(), 'st'))
+        
+    for line in lines_to_write:
+        write_to_file(line, 'st', 'search')
+    
+    compute_avg('st', 'search')
+    
+def avg_exec_time_delete(iterations: int = 3):
+    '''
+    Execute the tree operation for the specified no of iterations
+    & write the execution times in csv. Finally calculate average
+    execution time & write back.
+    '''
+    print('Averaging ST delete..')
+    lines_to_write = []
+    for i in range(iterations):
+        # re-initialize tree each time
+        st = SplayTree()
+        # ignore insertion for this
+        st_insert(st)
+        ([one_1, one_2, one_3, two_1, two_2, two_3], [h_one_1, h_one_2, h_one_3, h_two_1, h_two_2, h_two_3]) = st_delete(st)
+        
+        # write each execution time one by one
+        lines_to_write.append(construct_line_to_write(i, 1, 1, one_1.total_seconds(), h_one_1.total_seconds(), 'st'))
+        lines_to_write.append(construct_line_to_write(i, 1, 1, one_1.total_seconds(), h_one_1.total_seconds(), 'st'))
+        lines_to_write.append(construct_line_to_write(i, 1, 2, one_2.total_seconds(), h_one_2.total_seconds(), 'st'))
+        lines_to_write.append(construct_line_to_write(i, 1, 3, one_3.total_seconds(), h_one_3.total_seconds(), 'st'))
+        lines_to_write.append(construct_line_to_write(i, 2, 1, two_1.total_seconds(), h_two_1.total_seconds(), 'st'))
+        lines_to_write.append(construct_line_to_write(i, 2, 2, two_2.total_seconds(), h_two_2.total_seconds(), 'st'))
+        lines_to_write.append(construct_line_to_write(i, 2, 1, two_3.total_seconds(), h_two_3.total_seconds(), 'st'))
+        
+    for line in lines_to_write:
+        write_to_file(line, 'st', 'delete')
+    
+    compute_avg('st', 'delete')
+
 if __name__ == '__main__':
     # initialize the tree
-    st = SplayTree()
+    # st = SplayTree()
     
-    print(st_insert(st))
+    # print(st_insert(st))
+    # print(st.tree_height())
     # print(st_search(st))
     # print(st_delete(st))
+    
+    avg_exec_time_insert()
+    avg_exec_time_search()
+    avg_exec_time_delete()
+    # print('Uncomment above as necessary')

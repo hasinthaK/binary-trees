@@ -1,6 +1,6 @@
 import sys
 from datetime import datetime
-from file_utils import read_data_files
+from file_utils import read_data_files, construct_line_to_write, write_to_file, compute_avg
 
 sys.setrecursionlimit(30000)
 
@@ -300,12 +300,32 @@ class RedBlackTree:
     def delete(self, data):
         return self.delete_node_helper(self.root, data)
 
+    def tree_height(self):
+        return self._height_helper(self.root)
+
+    def _height_helper(self, node):
+        start = datetime.now()
+        if node == self.NULL:
+            end = datetime.now()
+            return (0, end - start)
+        
+        left_height = self._height_helper(node.left)[0]
+        right_height = self._height_helper(node.right)[0]
+        
+        height = max(left_height, right_height) + 1
+        end = datetime.now()
+        return (height, end - start)
+
 
 def rbt_insert(rbt: RedBlackTree):
     insert_values = read_data_files('insert')
     
     # execution times for insertion of each file
     exec_times = []
+    
+    # execution times for tree_height
+    # this should not be returned for coder runner activity
+    tree_height_exec_times = []
     
     # insert values from each file into the tree
     for values in insert_values.values():
@@ -319,7 +339,12 @@ def rbt_insert(rbt: RedBlackTree):
         # add execution time for each file
         exec_times.append(end - start)
         
-    return exec_times
+        # add tree_height exec time for each file
+        tree_height_exec_times.append(rbt.tree_height()[1])
+        
+    # return only exec_times for code runner
+    # return exec_times
+    return (exec_times, tree_height_exec_times)
         
 def rbt_search(rbt: RedBlackTree):
     # initialize the empty tree first
@@ -329,6 +354,10 @@ def rbt_search(rbt: RedBlackTree):
     
     # execution times for search of each file
     exec_times = []
+    
+    # execution times for tree_height
+    # this should not be returned for coder runner activity
+    tree_height_exec_times = []
     
     # search values of each file from the tree
     for values in search_values.values():
@@ -342,7 +371,12 @@ def rbt_search(rbt: RedBlackTree):
         # add execution time for each file
         exec_times.append(end - start)
         
-    return exec_times
+        # add tree_height exec time for each file
+        tree_height_exec_times.append(rbt.tree_height()[1])
+        
+    # return only exec_times for code runner
+    # return exec_times
+    return (exec_times, tree_height_exec_times)
 
 def rbt_delete(rbt: RedBlackTree):
     # initialize the empty tree first
@@ -352,6 +386,10 @@ def rbt_delete(rbt: RedBlackTree):
     
     # execution times for deletion of each file
     exec_times = []
+    
+    # execution times for tree_height
+    # this should not be returned for coder runner activity
+    tree_height_exec_times = []
     
     # delete values of each file from the tree
     for values in delete_values.values():
@@ -365,12 +403,108 @@ def rbt_delete(rbt: RedBlackTree):
         # add execution time for each file
         exec_times.append(end - start)
         
-    return exec_times
+        # add tree_height exec time for each file
+        tree_height_exec_times.append(rbt.tree_height()[1])
+        
+    # return only exec_times for code runner
+    # return exec_times
+    return (exec_times, tree_height_exec_times)
+    
+def avg_exec_time_insert(iterations: int = 3):
+    '''
+    Execute the tree operation for the specified no of iterations
+    & write the execution times in csv. Finally calculate average
+    execution time & write back.
+    '''
+    print('Averaging RBT insert..')
+    lines_to_write = []
+    for i in range(iterations):
+        # re-initialize tree each time
+        rbt = RedBlackTree()
+        ([one_1, one_2, one_3, two_1, two_2, two_3], [h_one_1, h_one_2, h_one_3, h_two_1, h_two_2, h_two_3]) = rbt_insert(rbt)
+        
+        # write each execution time one by one
+        lines_to_write.append(construct_line_to_write(i, 1, 1, one_1.total_seconds(), h_one_1.total_seconds(), 'rbt'))
+        lines_to_write.append(construct_line_to_write(i, 1, 1, one_1.total_seconds(), h_one_1.total_seconds(), 'rbt'))
+        lines_to_write.append(construct_line_to_write(i, 1, 2, one_2.total_seconds(), h_one_2.total_seconds(), 'rbt'))
+        lines_to_write.append(construct_line_to_write(i, 1, 3, one_3.total_seconds(), h_one_3.total_seconds(), 'rbt'))
+        lines_to_write.append(construct_line_to_write(i, 2, 1, two_1.total_seconds(), h_two_1.total_seconds(), 'rbt'))
+        lines_to_write.append(construct_line_to_write(i, 2, 2, two_2.total_seconds(), h_two_2.total_seconds(), 'rbt'))
+        lines_to_write.append(construct_line_to_write(i, 2, 1, two_3.total_seconds(), h_two_3.total_seconds(), 'rbt'))
+        
+    for line in lines_to_write:
+        write_to_file(line, 'rbt', 'insert')
+    
+    compute_avg('rbt', 'insert')
+    
+def avg_exec_time_search(iterations: int = 3):
+    '''
+    Execute the tree operation for the specified no of iterations
+    & write the execution times in csv. Finally calculate average
+    execution time & write back.
+    '''
+    print('Averaging RBT search..')
+    lines_to_write = []
+    for i in range(iterations):
+        # re-initialize tree each time
+        rbt = RedBlackTree()
+        # ignore insertion for this
+        rbt_insert(rbt)
+        ([one_1, one_2, one_3, two_1, two_2, two_3], [h_one_1, h_one_2, h_one_3, h_two_1, h_two_2, h_two_3]) = rbt_search(rbt)
+        
+        # write each execution time one by one
+        lines_to_write.append(construct_line_to_write(i, 1, 1, one_1.total_seconds(), h_one_1.total_seconds(), 'rbt'))
+        lines_to_write.append(construct_line_to_write(i, 1, 1, one_1.total_seconds(), h_one_1.total_seconds(), 'rbt'))
+        lines_to_write.append(construct_line_to_write(i, 1, 2, one_2.total_seconds(), h_one_2.total_seconds(), 'rbt'))
+        lines_to_write.append(construct_line_to_write(i, 1, 3, one_3.total_seconds(), h_one_3.total_seconds(), 'rbt'))
+        lines_to_write.append(construct_line_to_write(i, 2, 1, two_1.total_seconds(), h_two_1.total_seconds(), 'rbt'))
+        lines_to_write.append(construct_line_to_write(i, 2, 2, two_2.total_seconds(), h_two_2.total_seconds(), 'rbt'))
+        lines_to_write.append(construct_line_to_write(i, 2, 1, two_3.total_seconds(), h_two_3.total_seconds(), 'rbt'))
+        
+    for line in lines_to_write:
+        write_to_file(line, 'rbt', 'search')
+    
+    compute_avg('rbt', 'search')
+    
+def avg_exec_time_delete(iterations: int = 3):
+    '''
+    Execute the tree operation for the specified no of iterations
+    & write the execution times in csv. Finally calculate average
+    execution time & write back.
+    '''
+    print('Averaging RBT delete..')
+    lines_to_write = []
+    for i in range(iterations):
+        # re-initialize tree each time
+        rbt = RedBlackTree()
+        # ignore insertion for this
+        rbt_insert(rbt)
+        ([one_1, one_2, one_3, two_1, two_2, two_3], [h_one_1, h_one_2, h_one_3, h_two_1, h_two_2, h_two_3]) = rbt_delete(rbt)
+        
+        # write each execution time one by one
+        lines_to_write.append(construct_line_to_write(i, 1, 1, one_1.total_seconds(), h_one_1.total_seconds(), 'rbt'))
+        lines_to_write.append(construct_line_to_write(i, 1, 1, one_1.total_seconds(), h_one_1.total_seconds(), 'rbt'))
+        lines_to_write.append(construct_line_to_write(i, 1, 2, one_2.total_seconds(), h_one_2.total_seconds(), 'rbt'))
+        lines_to_write.append(construct_line_to_write(i, 1, 3, one_3.total_seconds(), h_one_3.total_seconds(), 'rbt'))
+        lines_to_write.append(construct_line_to_write(i, 2, 1, two_1.total_seconds(), h_two_1.total_seconds(), 'rbt'))
+        lines_to_write.append(construct_line_to_write(i, 2, 2, two_2.total_seconds(), h_two_2.total_seconds(), 'rbt'))
+        lines_to_write.append(construct_line_to_write(i, 2, 1, two_3.total_seconds(), h_two_3.total_seconds(), 'rbt'))
+        
+    for line in lines_to_write:
+        write_to_file(line, 'rbt', 'delete')
+    
+    compute_avg('rbt', 'delete')
     
 if __name__ == '__main__':
     # initialize the tree
-    rbt = RedBlackTree()
+    # rbt = RedBlackTree()
     
-    print(rbt_insert(rbt))
+    # print(rbt_insert(rbt))
+    # print(rbt.tree_height())
     # print(rbt_search(rbt))
     # print(rbt_delete(rbt))
+    
+    avg_exec_time_insert()
+    avg_exec_time_search()
+    avg_exec_time_delete()
+    # print('Uncomment above as necessary')
