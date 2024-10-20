@@ -1,6 +1,6 @@
 import sys
 from datetime import datetime
-from file_utils import read_data_files, construct_line_to_write, write_to_file, compute_avg
+from file_utils import read_data_files, write_to_file, compute_avg, get_lines_to_write
 
 sys.setrecursionlimit(30000)
 
@@ -265,16 +265,10 @@ def avg_exec_time_insert(iterations: int = 3):
     for i in range(iterations):
         # re-initialize tree each time
         bst = BinarySearchTree()
-        ([one_1, one_2, one_3, two_1, two_2, two_3], [h_one_1, h_one_2, h_one_3, h_two_1, h_two_2, h_two_3]) = bst_insert(bst)
+        exec_times = bst_insert(bst)
         
         # write each execution time one by one
-        lines_to_write.append(construct_line_to_write(i, 1, 1, one_1.total_seconds(), h_one_1.total_seconds(), 'bst'))
-        lines_to_write.append(construct_line_to_write(i, 1, 1, one_1.total_seconds(), h_one_1.total_seconds(), 'bst'))
-        lines_to_write.append(construct_line_to_write(i, 1, 2, one_2.total_seconds(), h_one_2.total_seconds(), 'bst'))
-        lines_to_write.append(construct_line_to_write(i, 1, 3, one_3.total_seconds(), h_one_3.total_seconds(), 'bst'))
-        lines_to_write.append(construct_line_to_write(i, 2, 1, two_1.total_seconds(), h_two_1.total_seconds(), 'bst'))
-        lines_to_write.append(construct_line_to_write(i, 2, 2, two_2.total_seconds(), h_two_2.total_seconds(), 'bst'))
-        lines_to_write.append(construct_line_to_write(i, 2, 1, two_3.total_seconds(), h_two_3.total_seconds(), 'bst'))
+        lines_to_write = get_lines_to_write(i, exec_times, 'bst')
         
     for line in lines_to_write:
         write_to_file(line, 'bst', 'insert')
@@ -294,16 +288,10 @@ def avg_exec_time_search(iterations: int = 3):
         bst = BinarySearchTree()
         # ignore insertion for this
         bst_insert(bst)
-        ([one_1, one_2, one_3, two_1, two_2, two_3], [h_one_1, h_one_2, h_one_3, h_two_1, h_two_2, h_two_3]) = bst_search(bst)
+        exec_times = bst_search(bst)
         
         # write each execution time one by one
-        lines_to_write.append(construct_line_to_write(i, 1, 1, one_1.total_seconds(), h_one_1.total_seconds(), 'bst'))
-        lines_to_write.append(construct_line_to_write(i, 1, 1, one_1.total_seconds(), h_one_1.total_seconds(), 'bst'))
-        lines_to_write.append(construct_line_to_write(i, 1, 2, one_2.total_seconds(), h_one_2.total_seconds(), 'bst'))
-        lines_to_write.append(construct_line_to_write(i, 1, 3, one_3.total_seconds(), h_one_3.total_seconds(), 'bst'))
-        lines_to_write.append(construct_line_to_write(i, 2, 1, two_1.total_seconds(), h_two_1.total_seconds(), 'bst'))
-        lines_to_write.append(construct_line_to_write(i, 2, 2, two_2.total_seconds(), h_two_2.total_seconds(), 'bst'))
-        lines_to_write.append(construct_line_to_write(i, 2, 1, two_3.total_seconds(), h_two_3.total_seconds(), 'bst'))
+        lines_to_write = get_lines_to_write(i, exec_times, 'bst')
         
     for line in lines_to_write:
         write_to_file(line, 'bst', 'search')
@@ -323,16 +311,10 @@ def avg_exec_time_delete(iterations: int = 3):
         bst = BinarySearchTree()
         # ignore insertion for this
         bst_insert(bst)
-        ([one_1, one_2, one_3, two_1, two_2, two_3], [h_one_1, h_one_2, h_one_3, h_two_1, h_two_2, h_two_3]) = bst_delete(bst)
+        exec_times = bst_delete(bst)
         
         # write each execution time one by one
-        lines_to_write.append(construct_line_to_write(i, 1, 1, one_1.total_seconds(), h_one_1.total_seconds(), 'bst'))
-        lines_to_write.append(construct_line_to_write(i, 1, 1, one_1.total_seconds(), h_one_1.total_seconds(), 'bst'))
-        lines_to_write.append(construct_line_to_write(i, 1, 2, one_2.total_seconds(), h_one_2.total_seconds(), 'bst'))
-        lines_to_write.append(construct_line_to_write(i, 1, 3, one_3.total_seconds(), h_one_3.total_seconds(), 'bst'))
-        lines_to_write.append(construct_line_to_write(i, 2, 1, two_1.total_seconds(), h_two_1.total_seconds(), 'bst'))
-        lines_to_write.append(construct_line_to_write(i, 2, 2, two_2.total_seconds(), h_two_2.total_seconds(), 'bst'))
-        lines_to_write.append(construct_line_to_write(i, 2, 1, two_3.total_seconds(), h_two_3.total_seconds(), 'bst'))
+        lines_to_write = get_lines_to_write(i, exec_times, 'bst')
         
     for line in lines_to_write:
         write_to_file(line, 'bst', 'delete')
@@ -348,7 +330,7 @@ if __name__ == '__main__':
     # print(bst_search(bst))
     # print(bst_delete(bst))
     
-    # avg_exec_time_insert()
-    # avg_exec_time_search()
-    # avg_exec_time_delete()
-    print('Uncomment above as necessary')
+    avg_exec_time_insert()
+    avg_exec_time_search()
+    avg_exec_time_delete()
+    # print('Uncomment above as necessary')

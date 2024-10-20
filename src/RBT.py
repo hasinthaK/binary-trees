@@ -1,6 +1,6 @@
 import sys
 from datetime import datetime
-from file_utils import read_data_files, construct_line_to_write, write_to_file, compute_avg
+from file_utils import read_data_files, write_to_file, compute_avg, get_lines_to_write
 
 sys.setrecursionlimit(30000)
 
@@ -421,16 +421,10 @@ def avg_exec_time_insert(iterations: int = 3):
     for i in range(iterations):
         # re-initialize tree each time
         rbt = RedBlackTree()
-        ([one_1, one_2, one_3, two_1, two_2, two_3], [h_one_1, h_one_2, h_one_3, h_two_1, h_two_2, h_two_3]) = rbt_insert(rbt)
+        exec_times = rbt_insert(rbt)
         
         # write each execution time one by one
-        lines_to_write.append(construct_line_to_write(i, 1, 1, one_1.total_seconds(), h_one_1.total_seconds(), 'rbt'))
-        lines_to_write.append(construct_line_to_write(i, 1, 1, one_1.total_seconds(), h_one_1.total_seconds(), 'rbt'))
-        lines_to_write.append(construct_line_to_write(i, 1, 2, one_2.total_seconds(), h_one_2.total_seconds(), 'rbt'))
-        lines_to_write.append(construct_line_to_write(i, 1, 3, one_3.total_seconds(), h_one_3.total_seconds(), 'rbt'))
-        lines_to_write.append(construct_line_to_write(i, 2, 1, two_1.total_seconds(), h_two_1.total_seconds(), 'rbt'))
-        lines_to_write.append(construct_line_to_write(i, 2, 2, two_2.total_seconds(), h_two_2.total_seconds(), 'rbt'))
-        lines_to_write.append(construct_line_to_write(i, 2, 1, two_3.total_seconds(), h_two_3.total_seconds(), 'rbt'))
+        lines_to_write = get_lines_to_write(i, exec_times, 'rbt')
         
     for line in lines_to_write:
         write_to_file(line, 'rbt', 'insert')
@@ -450,16 +444,10 @@ def avg_exec_time_search(iterations: int = 3):
         rbt = RedBlackTree()
         # ignore insertion for this
         rbt_insert(rbt)
-        ([one_1, one_2, one_3, two_1, two_2, two_3], [h_one_1, h_one_2, h_one_3, h_two_1, h_two_2, h_two_3]) = rbt_search(rbt)
+        exec_times = rbt_search(rbt)
         
         # write each execution time one by one
-        lines_to_write.append(construct_line_to_write(i, 1, 1, one_1.total_seconds(), h_one_1.total_seconds(), 'rbt'))
-        lines_to_write.append(construct_line_to_write(i, 1, 1, one_1.total_seconds(), h_one_1.total_seconds(), 'rbt'))
-        lines_to_write.append(construct_line_to_write(i, 1, 2, one_2.total_seconds(), h_one_2.total_seconds(), 'rbt'))
-        lines_to_write.append(construct_line_to_write(i, 1, 3, one_3.total_seconds(), h_one_3.total_seconds(), 'rbt'))
-        lines_to_write.append(construct_line_to_write(i, 2, 1, two_1.total_seconds(), h_two_1.total_seconds(), 'rbt'))
-        lines_to_write.append(construct_line_to_write(i, 2, 2, two_2.total_seconds(), h_two_2.total_seconds(), 'rbt'))
-        lines_to_write.append(construct_line_to_write(i, 2, 1, two_3.total_seconds(), h_two_3.total_seconds(), 'rbt'))
+        lines_to_write = get_lines_to_write(i, exec_times, 'rbt')
         
     for line in lines_to_write:
         write_to_file(line, 'rbt', 'search')
@@ -479,16 +467,10 @@ def avg_exec_time_delete(iterations: int = 3):
         rbt = RedBlackTree()
         # ignore insertion for this
         rbt_insert(rbt)
-        ([one_1, one_2, one_3, two_1, two_2, two_3], [h_one_1, h_one_2, h_one_3, h_two_1, h_two_2, h_two_3]) = rbt_delete(rbt)
+        exec_times = rbt_delete(rbt)
         
         # write each execution time one by one
-        lines_to_write.append(construct_line_to_write(i, 1, 1, one_1.total_seconds(), h_one_1.total_seconds(), 'rbt'))
-        lines_to_write.append(construct_line_to_write(i, 1, 1, one_1.total_seconds(), h_one_1.total_seconds(), 'rbt'))
-        lines_to_write.append(construct_line_to_write(i, 1, 2, one_2.total_seconds(), h_one_2.total_seconds(), 'rbt'))
-        lines_to_write.append(construct_line_to_write(i, 1, 3, one_3.total_seconds(), h_one_3.total_seconds(), 'rbt'))
-        lines_to_write.append(construct_line_to_write(i, 2, 1, two_1.total_seconds(), h_two_1.total_seconds(), 'rbt'))
-        lines_to_write.append(construct_line_to_write(i, 2, 2, two_2.total_seconds(), h_two_2.total_seconds(), 'rbt'))
-        lines_to_write.append(construct_line_to_write(i, 2, 1, two_3.total_seconds(), h_two_3.total_seconds(), 'rbt'))
+        lines_to_write = get_lines_to_write(i, exec_times, 'rbt')
         
     for line in lines_to_write:
         write_to_file(line, 'rbt', 'delete')

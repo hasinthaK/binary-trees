@@ -1,6 +1,6 @@
 import sys
 from datetime import datetime
-from file_utils import read_data_files, construct_line_to_write, write_to_file, compute_avg
+from file_utils import read_data_files, write_to_file, compute_avg, get_lines_to_write
 
 sys.setrecursionlimit(30000)
 
@@ -304,16 +304,10 @@ def avg_exec_time_insert(iterations: int = 3):
     for i in range(iterations):
         # re-initialize tree each time
         st = SplayTree()
-        ([one_1, one_2, one_3, two_1, two_2, two_3], [h_one_1, h_one_2, h_one_3, h_two_1, h_two_2, h_two_3]) = st_insert(st)
+        exec_times = st_insert(st)
         
         # write each execution time one by one
-        lines_to_write.append(construct_line_to_write(i, 1, 1, one_1.total_seconds(), h_one_1.total_seconds(), 'st'))
-        lines_to_write.append(construct_line_to_write(i, 1, 1, one_1.total_seconds(), h_one_1.total_seconds(), 'st'))
-        lines_to_write.append(construct_line_to_write(i, 1, 2, one_2.total_seconds(), h_one_2.total_seconds(), 'st'))
-        lines_to_write.append(construct_line_to_write(i, 1, 3, one_3.total_seconds(), h_one_3.total_seconds(), 'st'))
-        lines_to_write.append(construct_line_to_write(i, 2, 1, two_1.total_seconds(), h_two_1.total_seconds(), 'st'))
-        lines_to_write.append(construct_line_to_write(i, 2, 2, two_2.total_seconds(), h_two_2.total_seconds(), 'st'))
-        lines_to_write.append(construct_line_to_write(i, 2, 1, two_3.total_seconds(), h_two_3.total_seconds(), 'st'))
+        lines_to_write = get_lines_to_write(i, exec_times, 'st')
         
     for line in lines_to_write:
         write_to_file(line, 'st', 'insert')
@@ -333,16 +327,10 @@ def avg_exec_time_search(iterations: int = 3):
         st = SplayTree()
         # ignore insertion for this
         st_insert(st)
-        ([one_1, one_2, one_3, two_1, two_2, two_3], [h_one_1, h_one_2, h_one_3, h_two_1, h_two_2, h_two_3]) = st_search(st)
+        exec_times = st_search(st)
         
         # write each execution time one by one
-        lines_to_write.append(construct_line_to_write(i, 1, 1, one_1.total_seconds(), h_one_1.total_seconds(), 'st'))
-        lines_to_write.append(construct_line_to_write(i, 1, 1, one_1.total_seconds(), h_one_1.total_seconds(), 'st'))
-        lines_to_write.append(construct_line_to_write(i, 1, 2, one_2.total_seconds(), h_one_2.total_seconds(), 'st'))
-        lines_to_write.append(construct_line_to_write(i, 1, 3, one_3.total_seconds(), h_one_3.total_seconds(), 'st'))
-        lines_to_write.append(construct_line_to_write(i, 2, 1, two_1.total_seconds(), h_two_1.total_seconds(), 'st'))
-        lines_to_write.append(construct_line_to_write(i, 2, 2, two_2.total_seconds(), h_two_2.total_seconds(), 'st'))
-        lines_to_write.append(construct_line_to_write(i, 2, 1, two_3.total_seconds(), h_two_3.total_seconds(), 'st'))
+        lines_to_write = get_lines_to_write(i, exec_times, 'st')
         
     for line in lines_to_write:
         write_to_file(line, 'st', 'search')
@@ -362,16 +350,10 @@ def avg_exec_time_delete(iterations: int = 3):
         st = SplayTree()
         # ignore insertion for this
         st_insert(st)
-        ([one_1, one_2, one_3, two_1, two_2, two_3], [h_one_1, h_one_2, h_one_3, h_two_1, h_two_2, h_two_3]) = st_delete(st)
+        exec_times = st_delete(st)
         
         # write each execution time one by one
-        lines_to_write.append(construct_line_to_write(i, 1, 1, one_1.total_seconds(), h_one_1.total_seconds(), 'st'))
-        lines_to_write.append(construct_line_to_write(i, 1, 1, one_1.total_seconds(), h_one_1.total_seconds(), 'st'))
-        lines_to_write.append(construct_line_to_write(i, 1, 2, one_2.total_seconds(), h_one_2.total_seconds(), 'st'))
-        lines_to_write.append(construct_line_to_write(i, 1, 3, one_3.total_seconds(), h_one_3.total_seconds(), 'st'))
-        lines_to_write.append(construct_line_to_write(i, 2, 1, two_1.total_seconds(), h_two_1.total_seconds(), 'st'))
-        lines_to_write.append(construct_line_to_write(i, 2, 2, two_2.total_seconds(), h_two_2.total_seconds(), 'st'))
-        lines_to_write.append(construct_line_to_write(i, 2, 1, two_3.total_seconds(), h_two_3.total_seconds(), 'st'))
+        lines_to_write = get_lines_to_write(i, exec_times, 'st')
         
     for line in lines_to_write:
         write_to_file(line, 'st', 'delete')
