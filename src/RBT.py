@@ -427,8 +427,8 @@ def avg_exec_time_insert(iterations: int = 3):
         # write each execution time one by one
         lines_to_write = get_lines_to_write(i, exec_times, 'rbt')
         
-    for line in lines_to_write:
-        write_to_file(line, 'rbt', 'insert')
+        for line in lines_to_write:
+            write_to_file(line, 'rbt', 'insert')
     
     compute_avg('rbt', 'insert')
     
